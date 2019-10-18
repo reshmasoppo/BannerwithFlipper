@@ -3,6 +3,7 @@ package com.example.bannerwithflipper;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
 
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
@@ -18,7 +19,6 @@ public class Viewpager_MainActivity extends AppCompatActivity {
     List<Slider> slidelist = new ArrayList<>();
     private Timer timer;
     private int current_position = 0;
-
     ViewPager pager;
     CustomAdapter adapter;
 
@@ -27,52 +27,41 @@ public class Viewpager_MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.viewpager_main);
-        prepareslide();
+        pager = findViewById(R.id.viewpager_id);
+        prepareSlide();
         adapter = new CustomAdapter(slidelist, this);
-        pager =findViewById(R.id.viewpager_id);
         pager.setAdapter(adapter);
         /*After setting the adapter use the timer */
-       createslideshow();
+        createSlideshow();
+
     }
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
-    private void prepareslide()
-    {
-        int[] images = {R.drawable.img1};
+    private void prepareSlide() {
+        int[] images = {R.drawable.img1, R.drawable.img2, R.drawable.img3, R.drawable.img4};
 
-        for (int count=0; count<images.length; count++) {
+        for (int count = 0; count < images.length; count++) {
             slidelist.add(new Slider(images[count]));
         }
     }
 
-public void createslideshow()
-{
-
-    if(slidelist.size()> 1)
-    {
-
+    private void createSlideshow() {
         final Handler handler = new Handler();
-         final Runnable runnable = new Runnable() {
+        final Runnable runnable = new Runnable() {
             @Override
             public void run() {
+                if (current_position == Integer.MAX_VALUE)
+                    current_position = 0;
+                pager.setCurrentItem(current_position++, true);
 
-                if (current_position != slidelist.size()) {
-                    pager.setCurrentItem(current_position++, true);
-                }
-                else
-                {
-                    current_position=0;
-                    pager.setCurrentItem(0,true);
-                }
             }
         };
-         timer = new Timer();
+        timer = new Timer();
         timer.schedule(new TimerTask() {
             @Override
             public void run() {
                 handler.post(runnable);
             }
-        }, 300, 2500);
-
+        }, 250, 2500);
     }
-}}
+}

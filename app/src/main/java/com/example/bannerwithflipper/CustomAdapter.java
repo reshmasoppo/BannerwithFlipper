@@ -1,43 +1,55 @@
 package com.example.bannerwithflipper;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
+
 import androidx.annotation.NonNull;
-import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.viewpager.widget.PagerAdapter;
+
 import java.util.List;
 
 public class CustomAdapter extends PagerAdapter {
+
     private Context context;
-    List<Slider> slidelist;
+    private List<Slider> slidelist;
+    private int custom_pos = 0;
     LayoutInflater inflater;
 
     public CustomAdapter(List<Slider> slidelist, Context context) {
         this.context = context;
         this.slidelist = slidelist;
+        inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+
     }
 
     @Override
     public int getCount() {
-        return slidelist.size();
+        int count = slidelist.size();
+        if (count > 1) {
+            count = Integer.MAX_VALUE;
+        }
+        return count;
     }
 
     @Override
     public boolean isViewFromObject(@NonNull View view, @NonNull Object object) {
-        return view ==object;
+        return view == object;
     }
 
 
     @Override
     public Object instantiateItem(@NonNull ViewGroup container, int position) {
 
+        if (custom_pos > 3)
+            custom_pos = 0;
 
-        inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        Slider slide = slidelist.get(position);
+        Slider slide = slidelist.get(custom_pos);
+
+        custom_pos++;
         View itemview = inflater.inflate(R.layout.singleitem, container, false);
         ImageView img = (ImageView) itemview.findViewById(R.id.imageView);
         img.setImageResource(slide.getImgid());
@@ -47,7 +59,8 @@ public class CustomAdapter extends PagerAdapter {
 
     @Override
     public void destroyItem(@NonNull ViewGroup container, int position, @NonNull Object object) {
-       container.removeView((ConstraintLayout)object);
+        Log.e("destroyItem", "Callled");
+        container.removeView((ViewGroup) object);
     }
 
 
